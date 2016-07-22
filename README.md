@@ -35,3 +35,49 @@ _[Fill with code examples before writing any code]_
 * Brenda cannot have the page opened in multiple tabs.
 
 ## Scenario 2
+
+# API Design ideas
+
+The library is trying to cover a number of use-cases, which is making for an unwieldy API. I am thinking something fluent like:
+
+```
+// Most liberal
+var pusher = new PusherCrowd().multipleWindowsPerUser().multipleTabsAllowed().multipleUsers();
+// Most restrictive
+var pusher = new PusherCrowd().oneWindowPerUser().oneTabPerWindow().oneUser();
+pusher.run();
+```
+
+Helper classes/methods can be provided later to wrap common cases.
+
+The defaults would be liberal (multiple windows, multiple tabs, multiple users) -- actually better to start strict, to prevent errors (ask for permission, not have to remember to reduce it). Methods to add and remove permissions are present, to allow for explicit statements and to add and remove as-needed.
+
+## Handling Infractions
+
+When a user opens an additional tab/window, or a second user visits the page(s), users of this library want to do something. They need to be able to register a handler that's called, and distinguish which infraction(s) have occurred.
+
+I am thinking something like the Promises interface for these, as it looks much neater in code than passing in an object with methods/parameters to be called (are there methods in Javascript? as in `{ myCallback: function(data) { ... } }`..?). I don't know how to implement that; I guess they are async calls, but ones which occur multiple times. Something like:
+
+```
+pusher.run().onMultipleTabs(function(data) { alert('Oi, only 1 tab allowed!'); }).onSuccess(function(data) { ... };
+```
+
+### The constructor
+
+We need to pass in:
+* `pusher key`
+* `authEndpoint` (URL)
+
+## Implementation notes
+```
+oneWindow:
+    All copies of this user need to have the same session ID
+
+oneTabPerWindow:
+    The session ID needs to be unique for every instance of this user
+
+oneUser:
+    The user ID appears max once
+```
+
+Filtering cannot be changed once `run()` is called, as it would change only in the current tab, and not in every window.
