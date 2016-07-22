@@ -1,6 +1,6 @@
 # Rationale
 
-pusher-crowd exists to detect and help you respond to the following situations:
+pusher-crowd exists to detect and allow you to take action in the following situations:
 
 1. A user having the same page open in multiple tabs
 2. Multiple users having the same page open in multiple tabs
